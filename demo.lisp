@@ -1,4 +1,4 @@
-(include-book "~/jolt/init")
+(include-book "init")
 (in-theory (enable rv32-step rv32-add))
 
 ;; 32-bit RISC-V:
