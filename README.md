@@ -10,7 +10,9 @@ For a demo of how to simulate a RISC-V CPU, see `demo.lisp`.
 
 ## Obtaining ACL2
 
-See the official ACL2 [page on installing ACL2](https://www.cs.utexas.edu/~moore/acl2/v8-5/HTML/installation/installation.html). If you're running a Debian-based machine, then `apt-get install acl2` should suffice. An ACL2 version supported on the Eclipse IDE is also available (see [ACL2 Sedan or ACL2s](https://www.cs.utexas.edu/~moore/acl2/v8-5/combined-manual/index.html?topic=ACL2____ACL2-SEDAN)). The instructions for ACL2s will also contain instructions for MacOS and, in particular, there is an ACL2s brew package.
+See the official ACL2 [page on installing ACL2](https://www.cs.utexas.edu/~moore/acl2/v8-5/HTML/installation/installation.html). If you're running a Debian-based machine, then `apt-get install acl2` should suffice. An Eclipse plugin called ACL2s (a.k.a. [ACL2 Sedan or ACL2s](https://www.cs.utexas.edu/~moore/acl2/v8-5/combined-manual/index.html?topic=ACL2____ACL2-SEDAN)) is also available. The [instructions for installing ACL2s](https://www.cs.utexas.edu/~moore/acl2/manuals/current/manual/?topic=ACL2S____ACL2S-INSTALLATION) support MacOS, Windows, and Linux. There is also an [ACL2 brew package](https://formulae.brew.sh/formula/acl2).
+
+Note: Best practice is to build ACL2 and certify appropriate community books using the official instructions. Obtaining ACL2 using one of the other methods may not include or certify the necessary community books automatically. In particular, one might need to invoke the [GL](https://www.cs.utexas.edu/~moore/acl2/manuals/current/manual/?topic=ACL2____GL) certification separately.
 
 ## Project structure
 A dependency graph between the different files should be forthcoming. For now, inspect the "`include-book`" commands at the beginning of each file. Some useful summaries:
