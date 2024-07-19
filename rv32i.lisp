@@ -3,6 +3,7 @@
 (include-book "std/util/define" :dir :system)
 (include-book "operations")
 (include-book "rv-state")
+(include-book "centaur/gl/gl" :dir :system)
 (include-book "imm-instr")
 (include-book "r-type")
 (include-book "ld-instr")
