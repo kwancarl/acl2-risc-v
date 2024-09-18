@@ -118,6 +118,13 @@
 	       (masked-ones-fast y 32))
  :g-bindings (gl::auto-bindings (:nat y 5)))
 
+(gl::def-gl-thm masked-ones-slow-and-fast
+ :hyp (unsigned-byte-p 5 y)
+ :concl (equal (masked-ones-slow y 32)
+	       (masked-ones-fast y 32))
+ :g-bindings (gl::auto-bindings (:nat y 5)))
+
+
 ;:i-am-here
 ;
 ;(gl::def-gl-param-thm masked-one-fast-and-slow
