@@ -4,6 +4,7 @@
 (include-book "centaur/gl/gl" :dir :system)
 (include-book "eq")
 (include-book "subtable")
+;; TODO: refactor and clean
 
 ;;
 ;;
@@ -71,50 +72,50 @@
  (defthm lookup-srl-0-subtable-correctness
   (implies (and (natp i) 
                 (natp j) 
-                (<= i (expt 2 32))
+                (<= i (expt 2  8))
                 (<= j (expt 2  5)))
-           (b* ((indices  (create-x-indices (expt 2 32) (expt 2 5)))
+           (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
                 (subtable (create-srli-subtable indices 0)))
                (equal (lookup i j subtable)
                       (ash i (- j)))))
   :hints (("Goal" :in-theory (disable (:e create-srli-subtable) (:e create-x-indices))
-	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 32)) (y-hi (expt 2 5)))))))
+	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 5)))))))
 
  (defthm lookup-srl-8-subtable-correctness
   (implies (and (natp i) 
                 (natp j) 
-                (<= i (expt 2 32))
+                (<= i (expt 2  8))
                 (<= j (expt 2  5)))
-           (b* ((indices  (create-x-indices (expt 2 32) (expt 2 5)))
+           (b* ((indices  (create-x-indices (expt 2  8) (expt 2 5)))
                 (subtable (create-srli-subtable indices 8)))
                (equal (lookup i j subtable)
                       (ash (ash i 8) (- j)))))
   :hints (("Goal" :in-theory (disable (:e create-srli-subtable) (:e create-x-indices))
-	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 32)) (y-hi (expt 2 5)))))))
+	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 5)))))))
 
  (defthm lookup-srl-16-subtable-correctness
   (implies (and (natp i) 
                 (natp j) 
-                (<= i (expt 2 32))
+                (<= i (expt 2 8))
                 (<= j (expt 2  5)))
-           (b* ((indices  (create-x-indices (expt 2 32) (expt 2 5)))
+           (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
                 (subtable (create-srli-subtable indices 16)))
                (equal (lookup i j subtable)
                       (ash (ash i 16) (- j)))))
   :hints (("Goal" :in-theory (disable (:e create-srli-subtable) (:e create-x-indices))
-	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 32)) (y-hi (expt 2 5)))))))
+	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 5)))))))
 
  (defthm lookup-srl-24-subtable-correctness
   (implies (and (natp i) 
                 (natp j) 
-                (<= i (expt 2 32))
+                (<= i (expt 2 8))
                 (<= j (expt 2  5)))
-           (b* ((indices  (create-x-indices (expt 2 32) (expt 2 5)))
+           (b* ((indices  (create-x-indices (expt 2 8) (expt 2 5)))
                 (subtable (create-srli-subtable indices 24)))
                (equal (lookup i j subtable)
                       (ash (ash i 24) (- j)))))
   :hints (("Goal" :in-theory (disable (:e create-srli-subtable) (:e create-x-indices))
-	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 32)) (y-hi (expt 2 5))))))))
+	          :use ((:instance lookup-srli-subtable-correctness (x-hi (expt 2 8)) (y-hi (expt 2 5))))))))
                  
 (include-book "centaur/gl/gl" :dir :system)
 
@@ -154,12 +155,12 @@
   (implies (and (natp y) (natp k) (< y k))
 	   (equal (srli-helper x y k) (ash x (- y))))))
 
- (local (defthm srli-helper-ash
+ (defthm srli-helper-ash
   (implies (and (natp y) (natp k))
 	   (equal (srli-helper x y k)
 		  (if (< k y) 
                       0
 		      (ash x (- y)))))
-  :hints (("Goal" :cases ((= k y) (< y k) (< k y)))))))
+  :hints (("Goal" :cases ((= k y) (< y k) (< k y))))))
 
 
