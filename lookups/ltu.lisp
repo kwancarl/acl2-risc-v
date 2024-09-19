@@ -8,6 +8,7 @@
 ;(local (include-book "arithmetic/top" :dir :system))
 
 (include-book "eq")
+(include-book "subtable")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;		         	;;
@@ -87,3 +88,69 @@
   :concl (equal (ltuwc x y 8)
 		(if (< x y) 1 0))
   :g-bindings (gl::auto-bindings (:mix (:nat x 32) (:nat y 32))))
+
+
+
+;;;;;
+;;
+;;   MATERIALIZE LTU SUBTABLES    ;;
+;;
+;;
+
+(defun materialize-ltu-subtable (idx-lst)
+ (b* (((unless (alistp idx-lst))     nil)
+      ((if (atom idx-lst))           nil)
+      ((cons idx rst)            idx-lst)
+      ((unless (consp idx))          nil)
+      ((cons x y)                    idx))
+     (cons (cons idx (if (< x y) 1 0))
+           (materialize-ltu-subtable rst))))
+(verify-guards materialize-ltu-subtable)
+
+(defthm alistp-of-materialize-ltu-subtable
+ (alistp (materialize-ltu-subtable idx-lst)))
+
+(defthm member-idx-lst-assoc-materialize-ltu-subtable
+ (implies (and (alistp idx-lst) (member idx idx-lst))
+          (assoc idx (materialize-ltu-subtable idx-lst))))
+
+(defthm assoc-member-ltu-subtable
+ (implies (assoc (cons i j) (materialize-ltu-subtable idx-lst))
+          (member (cons i j) idx-lst)))
+
+(defthm assoc-ltu-subtable
+ (implies (assoc (cons i j) (materialize-ltu-subtable idx-lst))
+          (equal (assoc (cons i j) (materialize-ltu-subtable idx-lst))
+                 (cons (cons i j) (if (< i j) 1 0)))))
+
+(defthm ltu-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi) )
+          (b* ((indices  (create-x-indices x-hi y-hi))
+               (subtable (materialize-ltu-subtable indices)))
+              (equal (assoc-equal (cons i j) subtable)
+                     (cons (cons i j) (if (< i j) 1 0))))))
+
+(defthm lookup-ltu-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi) )
+          (b* ((indices  (create-x-indices x-hi y-hi))
+               (subtable (materialize-ltu-subtable indices)))
+              (equal (lookup i j subtable)
+                     (if (< i j) 1 0))))
+ :hints (("Goal" :in-theory (enable lookup))))
+
+
+;;
+;;
+;;
+;;
+;;
