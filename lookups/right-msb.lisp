@@ -17,6 +17,7 @@
 (define right-msb-8 (x (y :type unsigned-byte))
   :irrelevant-formals-ok t
   :ignore-ok t
+  ;:enabled t
   :returns (msb bitp)
  (logbit 7 y))
 
@@ -54,7 +55,7 @@
      (cons (cons idx (right-msb-8 x y))
            (materialize-right-msb-8-subtable rst))))
 
-(defthm alistp-of-materialize-sra-sign-subtable
+(defthm alistp-of-materialize-right-msb-8-subtable
  (alistp (materialize-right-msb-8-subtable idx-lst)))
 
 (defthm member-idx-lst-assoc-materialize-right-msb-8-subtable
@@ -93,5 +94,5 @@
           (b* ((indices  (create-x-indices x-hi y-hi))
                (subtable (materialize-right-msb-8-subtable indices)))
               (equal (lookup i j subtable)
-                     (right-msb-8 i j))))
- :hints (("Goal" :in-theory (e/d (lookup) ()))))
+                     (logbit 7 j))))
+ :hints (("Goal" :in-theory (e/d (lookup right-msb-8) ()))))

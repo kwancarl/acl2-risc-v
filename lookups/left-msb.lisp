@@ -14,9 +14,11 @@
 ;;    left msb
 ;;	    ;;
 ;;;;;;;;;;;;;;
+
 (define left-msb-8 ((x :type unsigned-byte) y)
   :irrelevant-formals-ok t
   :ignore-ok t
+  :enabled t
   :returns (msb bitp)
  (logbit 7 x))
 
@@ -25,6 +27,7 @@
  :concl (equal (left-msb-8 x y)
                (if (<= (expt 2 7) x) 1 0))
  :g-bindings (gl::auto-bindings (:nat x 8)))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ;;
@@ -80,5 +83,18 @@
           (b* ((indices  (create-x-indices x-hi y-hi))
                (subtable (materialize-left-msb-8-subtable indices)))
               (equal (lookup i j subtable)
-                     (left-msb-8 i j))))
- :hints (("Goal" :in-theory (e/d (lookup) ()))))
+                     (logbit 7 i))))
+ :hints (("Goal" :in-theory (e/d (lookup left-msb-8) ()))))
+
+(in-theory (disable left-msb-8))
+
+
+
+
+
+
+
+
+
+
+
