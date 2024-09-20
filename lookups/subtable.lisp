@@ -1,3 +1,4 @@
+(in-package "ACL2")
 (include-book "centaur/fty/top" :dir :system)
 (include-book "std/util/bstar" :dir :system)
 (include-book "std/util/define" :dir :system)
@@ -51,42 +52,12 @@
                (<= j y-hi) )
           (member (cons i j) (create-x-indices x-hi y-hi))))
 
-(defun create-xor-subtable (idx-lst)
- (b* (((unless (alistp idx-lst))     nil)
-      ((if (atom idx-lst))           nil)
-      ((cons idx rst)            idx-lst)
-      ((unless (consp idx))          nil)
-      ((cons x y)                    idx))
-     (cons (cons idx (logxor x y))
-           (create-xor-subtable rst))))
+(defund lookup (x y table)
+ (cdr (assoc-equal (cons x y) table)))
+(verify-guards lookup)
 
-(defthm alistp-of-create-xor-subtable
- (alistp (create-xor-subtable idx-lst)))
-
-(defthm member-idx-lst-assoc-create-xor-subtable
- (implies (and (alistp idx-lst) (member idx idx-lst))
-          (assoc idx (create-xor-subtable idx-lst))))
-
-(defthm assoc-member-xor-subtable
- (implies (assoc (cons i j) (create-xor-subtable idx-lst))
-          (member (cons i j) idx-lst)))
-
-(defthm assoc-xor-subtable
- (implies (assoc (cons i j) (create-xor-subtable idx-lst))
-          (equal (assoc (cons i j) (create-xor-subtable idx-lst))
-                 (cons (cons i j) (logxor i j)))))
-
-(defthm xor-subtable-correctness
- (implies (and (natp x-hi) 
-               (natp y-hi) 
-               (natp i) 
-               (natp j) 
-               (<= i x-hi) 
-               (<= j y-hi) )
-          (b* ((indices  (create-x-indices x-hi y-hi))
-               (subtable (create-xor-subtable indices)))
-              (equal (assoc-equal (cons i j) subtable)
-                     (cons (cons i j) (logxor i j))))))
-                 
-
-      
+(defthm unsigned-byte-p-natp-bounds-equiv
+ (implies (unsigned-byte-p 8 x)
+          (and (natp x)
+               (natp (expt 2 8))
+               (<= x (expt 2 8)))))
