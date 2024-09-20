@@ -6,7 +6,7 @@
 (local (include-book "centaur/bitops/ihsext-basics" :dir :system))
 (local (include-book "centaur/bitops/fast-logext" :dir :system))
 (local (include-book "arithmetic/top" :dir :system))
-;(include-book "eq")
+(include-book "subtable")
 
 
 ;;;;;;;;;;;;;;
@@ -14,14 +14,71 @@
 ;;    left msb
 ;;	    ;;
 ;;;;;;;;;;;;;;
-(define left-msb ((x :type unsigned-byte) y)
+(define left-msb-8 ((x :type unsigned-byte) y)
   :irrelevant-formals-ok t
   :ignore-ok t
-  :returns (eq? bitp)
- (logbit 31 x))
+  :returns (msb bitp)
+ (logbit 7 x))
 
-(gl::def-gl-thm left-msb-correctness-32
- :hyp (unsigned-byte-p 32 x)
- :concl (equal (left-msb x y)
-               (if (<= (expt 2 31) x) 1 0))
- :g-bindings (gl::auto-bindings (:nat x 32)))
+(gl::def-gl-thm left-msb-8-correctness
+ :hyp (unsigned-byte-p 8 x)
+ :concl (equal (left-msb-8 x y)
+               (if (<= (expt 2 7) x) 1 0))
+ :g-bindings (gl::auto-bindings (:nat x 8)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                      ;;
+;;    MATERIALIZE left-msb SUBTABLE   ;;
+;;                                      ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun materialize-left-msb-8-subtable (idx-lst)
+ (b* (((unless (alistp idx-lst))     nil)
+      ((if (atom idx-lst))           nil)
+      ((cons idx rst)            idx-lst)
+      ((unless (consp idx))          nil)
+      ((cons x y)                    idx))
+     (cons (cons idx (left-msb-8 x y))
+           (materialize-left-msb-8-subtable rst))))
+
+(defthm alistp-of-materialize-left-msb-8-subtable
+ (alistp (materialize-left-msb-8-subtable idx-lst)))
+
+(defthm member-idx-lst-assoc-materialize-left-msb-8-subtable
+ (implies (and (alistp idx-lst) (member idx idx-lst))
+          (assoc idx (materialize-left-msb-8-subtable idx-lst))))
+
+(defthm assoc-member-materialize-left-msb-8-subtable
+ (implies (assoc (cons x y) (materialize-left-msb-8-subtable idx-lst))
+          (member (cons x y) idx-lst)))
+
+(defthm assoc-materialize-left-msb-8-subtable
+ (implies (assoc (cons i j) (materialize-left-msb-8-subtable idx-lst))
+          (equal (assoc (cons i j) (materialize-left-msb-8-subtable idx-lst))
+                 (cons (cons i j) (left-msb-8 i j)))))
+
+(defthm materialize-left-msb-8-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi))
+          (b* ((indices  (create-x-indices x-hi y-hi))
+               (subtable (materialize-left-msb-8-subtable indices)))
+              (equal (assoc-equal (cons i j) subtable)
+                     (cons (cons i j)
+                           (left-msb-8 i j))))))
+
+(defthm lookup-materialize-left-msb-8-subtable-correctness
+ (implies (and (natp x-hi)
+               (natp y-hi)
+               (natp i)
+               (natp j)
+               (<= i x-hi)
+               (<= j y-hi))
+          (b* ((indices  (create-x-indices x-hi y-hi))
+               (subtable (materialize-left-msb-8-subtable indices)))
+              (equal (lookup i j subtable)
+                     (left-msb-8 i j))))
+ :hints (("Goal" :in-theory (e/d (lookup) ()))))
